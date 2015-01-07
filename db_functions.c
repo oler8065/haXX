@@ -1,34 +1,23 @@
-#include <stdio.h>x
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "db_functions.h"
 
 
+typedef struct tree{
+  char *key;
+  char *value;
+  struct tree *left;
+  struct tree *right;
+} Tree;
+
+
 // Types
 char buffer[128];
-Node list = NULL;
 int found;
-Node cursor;
+Tree * cursor;
+Tree * treeRoot = NULL;
 
-
-void readDatabase (char *db){
-// Read the input file
-char *filename = db;
-printf("Loading database \"%s\"...\n\n", filename);
- FILE *database = fopen(filename, "r");
-
- while(!(feof(database))){
-   Node newNode = malloc(sizeof(struct node));
-   readline(buffer, 128, database);
-   newNode->key = malloc(strlen(buffer) + 1);
-   strcpy(newNode->key, buffer);
-   readline(buffer, 128, database);
-   newNode->value = malloc(strlen(buffer) + 1);
-   strcpy(newNode->value, buffer);
-   newNode->next = list;
-   list = newNode;
- }
-}
 
 void readline(char *dest, int n, FILE *source){
   fgets(dest, n, source);
@@ -37,25 +26,135 @@ void readline(char *dest, int n, FILE *source){
     dest[len-1] = '\0';
 }
 
+
+
+void printNode (Tree *node){
+ 
+  printf("Value: %s Key: %s", node->value, node->key);
+
+
+}
+
+Tree *newNode(char *key, char *value){
+  if(key == NULL && value == NULL){
+    return NULL;
+  }
+  Tree * new = (struct tree*)malloc(sizeof(struct tree));
+
+  new->key = (char*)malloc(strlen(key) + 1);
+  new->key = key;
+  new->value = (char*)malloc(strlen(value) + 1);
+  new->value = value;
+  new->right = NULL;
+  new->left = NULL;
+  
+  printNode(new);
+  return new;
+}
+
+
+void treeIns(Tree ** tree, Tree * node){
+  if(*tree == NULL) {
+    puts("1");
+    *tree = node;
+    return;
+  }else if(strcmp(node->key, (*tree)->key)  < 0){
+    puts("2");
+    treeIns(&(*tree)->left, node);
+  }
+  else if(strcmp(node->key, (*tree)->key) >= 0){
+    puts("3");
+    treeIns(&(*tree)->right, node);
+  }
+}
+
+
+
+
+
+Tree * treeInsert (Tree * node, Tree * tree){
+  puts("Reached treeins");
+  
+
+ if(tree == NULL){
+    puts("0");
+    return node;
+
+ }if(((strcmp(node->key, tree->key)) < 0) && tree->right == NULL){
+   
+    tree->right = node;
+    puts("1");
+    return tree;
+
+ }if(((strcmp(node->key, tree->key)) < 0) && tree->right != NULL){
+    treeInsert(node, tree->right);
+    puts("2");
+    return tree;
+    
+
+ }if(strcmp(node->key, tree->key) > 0 && tree->left == NULL){
+    tree->left = node;
+    puts("3");
+    return tree;
+ }if(((strcmp(node->key, tree->key)) > 0) && tree->left != NULL){
+    treeInsert(node, tree->left);
+    puts("4");
+    return tree;
+  }
+ puts("slutfall");
+ printf("Value: %s Key: %s", tree->value, tree->key);
+
+  return tree;
+}
+
+void initTree (char *db){
+
+  char *filename = db;
+  printf("Loading database \"%s\"...\n\n", filename);
+  FILE *database = fopen(filename, "r");
+  Tree * newTree;
+  newTree = NULL;
+  char key[128];
+  char value[128];  
+
+  while(!feof(database)){     
+    readline(key, 128, database);
+    readline(value, 128, database);
+     
+    if((key[0] != '\0') && (value[0] != '\0')){
+      Tree * treeNode = newNode(key, value);
+      printf("%p ", newTree);
+      treeIns(&newTree, treeNode);
+            puts("ballé");
+    }
+  }
+
+  treeRoot = newTree;
+
+}
+
+
 void startprocedure(int choice) {
   if (choice == 0) {
     printf("Enter key: ");
     readline(buffer, 128, stdin);
     puts("Searching database...\n");
     found = 0;
-    cursor = list;
+    cursor = treeRoot;
   }else{
     // new entry case
     printf("Enter key: ");
     readline(buffer, 128, stdin);
     puts("Searching database for duplicate keys...");
     found = 0;
-    cursor = list;
+    cursor = treeRoot;
   }
 }
 
-void query()
-{  
+void query(){
+
+  puts("QUERY");
+/*  
   startprocedure(0);
   while(!found && cursor != NULL){
     if(strcmp(buffer, cursor->key) == 0){
@@ -69,10 +168,15 @@ void query()
   if(!found){
     printf("Could not find an entry matching key \"%s\"!\n", buffer);
   }
+*/
 }
 
-void update_entry()
-{
+void update_entry(){
+
+  puts("UPDATE");
+
+  /*
+
   startprocedure(0);
   while(!found && cursor != NULL){
     if(strcmp(buffer, cursor->key) == 0){
@@ -93,11 +197,14 @@ void update_entry()
     strcpy(cursor->value, buffer);
     puts("Value inserted successfully!");
   }
-
+  */
 }
 
-void new_entry()
-{
+void new_entry(){
+
+  puts("NEW");
+
+  /*
   startprocedure(1);
   while(!found && cursor != NULL){
         if(strcmp(buffer, cursor->key) == 0){
@@ -122,10 +229,15 @@ void new_entry()
         puts("Entry inserted successfully:");
         printf("key: %s\nvalue: %s\n", list->key, list->value);
       }
+  */
 }
 
-void delete_entry()
-{
+void delete_entry(){
+
+  puts("DELETE");
+
+  /*
+
   startprocedure(0);
     Node prev = NULL;
       while(!found && cursor != NULL){
@@ -145,16 +257,25 @@ void delete_entry()
       if(!found){
         printf("Could not find an entry matching key \"%s\"!\n", buffer);
       }
-
+  */
 }
 
-void print_database()
-{
-  cursor = list;
-  while(cursor != NULL){
-    puts(cursor->key);
-    puts(cursor->value);
-    cursor = cursor->next;
+
+void printTree(Tree* tree){
+
+  if(tree == NULL){
+    return;
+  
+  }else{
+    printTree(tree->left);
+    printf("%s %s",tree->value,tree->key);
+    printTree(tree->right);
   }
+  return;
+}
+
+void print_database(){
+
+  printTree(treeRoot);
 
 }
