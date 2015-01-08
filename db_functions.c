@@ -42,69 +42,31 @@ Tree *newNode(char *key, char *value){
   Tree * new = (struct tree*)malloc(sizeof(struct tree));
 
   new->key = (char*)malloc(strlen(key) + 1);
-  new->key = key;
+  strcpy(new->key, key);
   new->value = (char*)malloc(strlen(value) + 1);
-  new->value = value;
+  strcpy(new->value, value);
   new->right = NULL;
   new->left = NULL;
   
-  printNode(new);
+  // printNode(new);
   return new;
 }
 
 
 void treeIns(Tree ** tree, Tree * node){
   if(*tree == NULL) {
-    puts("1");
+    //puts("1");
     *tree = node;
     return;
-  }else if(strcmp(node->key, (*tree)->key)  < 0){
-    puts("2");
-    treeIns(&(*tree)->left, node);
+  }else{
+    if(strcmp(node->key, (*tree)->key)  < 0){
+      //puts("2");
+      treeIns(&(*tree)->left, node);
+    }else{
+      //puts("3");
+      treeIns(&(*tree)->right, node);
+    }
   }
-  else if(strcmp(node->key, (*tree)->key) >= 0){
-    puts("3");
-    treeIns(&(*tree)->right, node);
-  }
-}
-
-
-
-
-
-Tree * treeInsert (Tree * node, Tree * tree){
-  puts("Reached treeins");
-  
-
- if(tree == NULL){
-    puts("0");
-    return node;
-
- }if(((strcmp(node->key, tree->key)) < 0) && tree->right == NULL){
-   
-    tree->right = node;
-    puts("1");
-    return tree;
-
- }if(((strcmp(node->key, tree->key)) < 0) && tree->right != NULL){
-    treeInsert(node, tree->right);
-    puts("2");
-    return tree;
-    
-
- }if(strcmp(node->key, tree->key) > 0 && tree->left == NULL){
-    tree->left = node;
-    puts("3");
-    return tree;
- }if(((strcmp(node->key, tree->key)) > 0) && tree->left != NULL){
-    treeInsert(node, tree->left);
-    puts("4");
-    return tree;
-  }
- puts("slutfall");
- printf("Value: %s Key: %s", tree->value, tree->key);
-
-  return tree;
 }
 
 void initTree (char *db){
@@ -123,13 +85,15 @@ void initTree (char *db){
      
     if((key[0] != '\0') && (value[0] != '\0')){
       Tree * treeNode = newNode(key, value);
-      printf("%p ", newTree);
+      // printf("%p ", newTree);
       treeIns(&newTree, treeNode);
-            puts("ballé");
+
     }
   }
-
+  
+  //printTree(newTree);
   treeRoot = newTree;
+  //printTree(treeRoot);
 
 }
 
@@ -268,7 +232,7 @@ void printTree(Tree* tree){
   
   }else{
     printTree(tree->left);
-    printf("%s %s",tree->value,tree->key);
+    printf("%s %s\n",tree->value,tree->key);
     printTree(tree->right);
   }
   return;
