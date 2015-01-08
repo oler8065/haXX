@@ -15,8 +15,10 @@ typedef struct tree{
 // Types
 char buffer[128];
 int found;
+int dupecheck;
 Tree * cursor;
 Tree * treeRoot = NULL;
+
 
 
 void readline(char *dest, int n, FILE *source){
@@ -118,8 +120,20 @@ void startprocedure(int choice) {
 void query(){
 
   puts("QUERY");
-/*  
+
   startprocedure(0);
+
+
+
+
+  //  buffer = sökkey
+  //cursor->key 
+  //
+  //  Gå rekursivt genom hela träden, jämför key för varje nod med buffer
+  //  jämförelse:  if(strcmp(buffer, cursor->key) == 0)
+    
+
+/*
   while(!found && cursor != NULL){
     if(strcmp(buffer, cursor->key) == 0){
       puts("Found entry:");
@@ -164,12 +178,64 @@ void update_entry(){
   */
 }
 
+void searchDuplicate (Tree ** tree, char * key){
+
+  cursor = *tree;
+  
+
+  if(cursor == NULL){
+    dupecheck = 0;
+
+  }else{
+
+    if(strcmp(key, cursor->key) == 0){
+      dupecheck = 1;
+
+    }else if(strcmp(key, cursor->key) < 0){
+      searchDuplicate(&(cursor->left), key);
+
+    }else{
+      searchDuplicate(&(cursor->right), key); 
+    }
+  }
+}
+
 void new_entry(){
-
-  puts("NEW");
-
-  /*
+  
   startprocedure(1);
+  char * tempKey = malloc(strlen(buffer) + 1);
+  strcpy(tempKey, buffer);
+
+  //puts("2");
+  searchDuplicate(&treeRoot, tempKey);
+  //printf("%d", found);
+
+  if(dupecheck == 1){
+    printf("key \"%s\" already exists!\n", buffer);
+ 
+  }else{
+    //char * tempKey = buffer;
+    //strcpy(tempKey, buffer);
+    printf("Enter value: ");
+    readline(buffer, 128, stdin);
+    char * tempVal = malloc(strlen(buffer) + 1);
+    strcpy(tempVal, buffer);
+    printf("%s \n", tempKey);
+    Tree * insertNode = newNode(tempKey, tempVal);
+    //printNode(insertNode);
+    treeIns(&treeRoot, insertNode);
+    
+    printf("Key: %s with value: %s added to database", tempKey, tempVal);
+
+  }
+
+}    
+  //while(!found && cursor != NULL){
+    
+
+
+  
+    /*
   while(!found && cursor != NULL){
         if(strcmp(buffer, cursor->key) == 0){
           printf("key \"%s\" already exists!\n", cursor->key);
@@ -193,8 +259,8 @@ void new_entry(){
         puts("Entry inserted successfully:");
         printf("key: %s\nvalue: %s\n", list->key, list->value);
       }
-  */
-}
+    */
+
 
 void delete_entry(){
 
