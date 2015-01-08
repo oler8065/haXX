@@ -11,7 +11,7 @@ int main(int argc, char *argv[]){
     return -1;
   }
   print_welcome();  
-  readDatabase(argv[1]);
+  initTree(argv[1]);
   int choice = -1;
   while(choice != 0){
     print_menu_choice();
