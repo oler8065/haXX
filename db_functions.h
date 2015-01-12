@@ -14,7 +14,7 @@ Tree *newNode(char *key, char *value);
 
 Tree * treeInsert (Tree * node, Tree * tree);
 
-void initTree (char *db);
+void * initTree (char *db);
 
 void readDatabase(char *db);
 
