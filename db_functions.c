@@ -54,7 +54,6 @@ Tree *newNode(char *key, char *value){
   return new;
 }
 
-
 void treeIns(Tree ** tree, Tree * node){
   if(*tree == NULL) {
     //puts("1");
@@ -99,7 +98,6 @@ void initTree (char *db){
 
 }
 
-
 void startprocedure(int choice) {
   if (choice == 0) {
     printf("Enter key: ");
@@ -117,45 +115,56 @@ void startprocedure(int choice) {
   }
 }
 
+
+Tree * searchKey (Tree ** tree, char * key){
+
+  cursor = *tree;
+
+  if(cursor == NULL){
+
+    return NULL;
+
+  }else{
+    
+    if(strcmp(key, cursor->key) == 0){      
+      
+    }else if(strcmp(key, cursor->key) < 0){
+      searchKey(&(cursor->left), key);
+     
+    }else{
+      searchKey(&(cursor->right), key);
+     
+    }
+  }
+  return cursor;
+}
+
+
 void query(){
 
   puts("QUERY");
 
   startprocedure(0);
-
-
-
-
-  //  buffer = sökkey
-  //cursor->key 
-  //
-  //  Gå rekursivt genom hela träden, jämför key för varje nod med buffer
-  //  jämförelse:  if(strcmp(buffer, cursor->key) == 0)
+  char * tempKey = malloc(strlen(buffer) + 1);
+  strcpy(tempKey, buffer);  
+  Tree * Node = searchKey(&treeRoot, tempKey);
+   
+  if(Node != NULL){
+    printNode(Node);
+    
+  }else{
+    puts("Key not found in database!");
     
 
-/*
-  while(!found && cursor != NULL){
-    if(strcmp(buffer, cursor->key) == 0){
-      puts("Found entry:");
-      printf("key: %s\nvalue: %s\n", cursor->key, cursor->value);
-      found = 1;
-    }else{
-      cursor = cursor->next;
-    }
   }
-  if(!found){
-    printf("Could not find an entry matching key \"%s\"!\n", buffer);
-  }
-*/
 }
 
 void update_entry(){
 
   puts("UPDATE");
 
-  /*
-
   startprocedure(0);
+  /*
   while(!found && cursor != NULL){
     if(strcmp(buffer, cursor->key) == 0){
       puts("Matching entry found:");
@@ -177,6 +186,7 @@ void update_entry(){
   }
   */
 }
+
 
 void searchDuplicate (Tree ** tree, char * key){
 
@@ -298,7 +308,7 @@ void printTree(Tree* tree){
   
   }else{
     printTree(tree->left);
-    printf("%s %s\n",tree->value,tree->key);
+    printf("%s %s\n",(char *)tree->value,(char *)tree->key);
     printTree(tree->right);
   }
   return;
