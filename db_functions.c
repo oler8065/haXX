@@ -64,7 +64,7 @@ void treeIns(Tree ** tree, Tree * node){
   }
 }
 
-void initTree (char *db){
+void * initTree (char *db){
 
   char *filename = db;
   printf("Loading database \"%s\"...\n\n", filename);
@@ -84,6 +84,8 @@ void initTree (char *db){
     }
   }  
   treeRoot = newTree;
+  return treeRoot;
+  //free(database);  frees last memory but causes valgrind errors.
 }
 
 void startprocedure(int choice) {
@@ -222,35 +224,36 @@ Tree * findMinNode(Tree * tree){
   return cursor;
 }
 
-Tree * delNode(Tree * tree, char * key){
+Tree * deleteNode(Tree * tree, char * key){
 
   if(tree == NULL) return tree;
 
   if(strcmp(key, tree->key) < 0){
-    tree->left = delNode(tree->left, key);
+    tree->left = deleteNode(tree->left, key);
   }
   
   else if(strcmp(key, tree->key) > 0){
-    tree->right = delNode(tree->right, key);
+    tree->right = deleteNode(tree->right, key);
   }
 
   else{
 
     if (tree->left == NULL){
       Tree * temp = tree->right;
-      free(tree);
+      //free(tree);
+      //puts("2");
       return temp;
       
     }else if(tree->right == NULL){
       Tree * temp = tree->left;
-      free(tree);
+      //free(tree);
       return temp;      
     }
     
     Tree * temp = findMinNode(tree->right);
     tree->key = temp->key;
     tree->value = temp->value;
-    tree->right = delNode(tree->right, temp->key);    
+    tree->right = deleteNode(tree->right, temp->key);    
   }
   return tree;
 }
@@ -263,7 +266,7 @@ void delete_entry(){
   Tree * temp = searchKey(&treeRoot, tempKey);
   
   if(temp != NULL){
-    delNode(treeRoot, tempKey);
+    treeRoot = deleteNode(treeRoot, tempKey);
     puts("Database entry deleted");
 
   }else{
@@ -296,24 +299,24 @@ void freeNode(Tree * node){
   free(node->key);
   free(node->value);
   free(node);
+  puts("fN");
 }
 
-void cleanMemory(Tree ** tree){
-  if ((*tree)->left != NULL){
-    freeNode((*tree)->left);
-    puts("1");
+void cleanMemory(Tree * tree){
+  if(tree == NULL){
+    return;
+
+  }else{
+    cleanMemory(tree->left);
+    cleanMemory(tree->right);
   }
-  if ((*tree)->right != NULL){
-    freeNode((*tree)->right);  
-    puts("2");
-  }
-  freeNode(*tree);
-  puts("3");
+  freeNode(tree);
+  return;
 }
- 
+
 void exitProcedure(){
 
-  cleanMemory(&treeRoot);
+  cleanMemory(treeRoot);
   puts("Memory cleared \n");
 
 }
