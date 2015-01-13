@@ -18,3 +18,6 @@ db_functions.o: db_functions.c db_functions.h
 	$(CC) $(CFLAGS) db_functions.c
 db.o: db.c db_functions.h print_functions.h
 	$(CC) $(CFLAGS) db.c
+	
+clean: 
+	rm *.o
