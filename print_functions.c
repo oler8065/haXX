@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "print_functions.h"
+#include "db_functions.h"
 
 
 void print_welcome(){
@@ -26,3 +27,4 @@ void print_menu_choice(){
   puts("0. Exit database");
   printf("? ");
 }
+
