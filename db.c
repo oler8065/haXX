@@ -45,6 +45,8 @@ int main(int argc, char *argv[]){
       break;
     case 0:
       // Exit
+      exit_process();
+      //free(database);
       puts("Good bye!");
       break;
     default:
